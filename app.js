@@ -12,7 +12,7 @@ router.post('crafting-calculator', (ctx, next) => {
     ctx.response.body = {
         fulfillmentText: "Hi Muffin!",
     };
-    console.log(ctx);
+    console.log(body);
 });
 const app = new Koa();
 app.use(bodyParser());
