@@ -23,6 +23,11 @@ export interface FulfillmentResponse {
     fulfillmentText: string
 }
 export interface Recipe {
-    input: {[item: string]: number},
-    output: {[item: string]: number},
+    output: ItemStack[],
+    input: ItemStack[],
+}
+
+export interface ItemStack {
+    item: string;
+    amount: number;
 }
