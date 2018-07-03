@@ -1,6 +1,9 @@
 {
   "name": "crafting-calculator",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=0.12"
+  },
   "description": "",
   "main": "index.js",
   "scripts": {

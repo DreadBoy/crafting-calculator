@@ -7,11 +7,11 @@ router.get('/', (ctx, next) => {
     ctx.body = { message: `Hello world!` };
     return next();
 });
-router.post('crafting-calculator', (ctx, next) => {
+router.post('/crafting-calculator', (ctx, next) => {
     const body = ctx.request.body;
 });
 const app = new Koa();
 app.use(bodyParser());
 app.use(router.middleware());
-app.listen(3000);
+app.listen(process.env.PORT || 1338);
 //# sourceMappingURL=app.js.map

@@ -14,4 +14,4 @@ router.post('/crafting-calculator', (ctx: Koa.Context, next: Function) => {
 const app = new Koa();
 app.use(bodyParser());
 app.use(router.middleware());
-app.listen(3000);
+app.listen(process.env.PORT || 1338);
