@@ -3,15 +3,19 @@ interface FulfillmentRequest {
     session: String
     queryResult: {
         queryText: String
-        parameters: { [key: string]: string }
+        parameters: { [key: string]: string[] }
         allRequiredParamsPresent: Boolean
         fulfillmentText: String
         fulfillmentMessages: {}
-        outputContexts: {}
+        outputContexts?: {}
         intent: {}
         intentDetectionConfidence: number
         diagnosticInfo: {}
         languageCode: String
-        originalDetectIntentRequest: {}
-    }
+    },
+    originalDetectIntentRequest: {},
+}
+export interface Recipe {
+    input: {[item: string]: number},
+    output: {[item: string]: number},
 }

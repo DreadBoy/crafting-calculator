@@ -1,18 +1,20 @@
 import * as Koa from 'koa';
+import {FulfillmentRequest} from './types';
+
 const router = require('koa-better-router')().loadMethods()
 const bodyParser = require('koa-bodyparser');
 
 router.get('/', (ctx: Koa.Context, next: Function) => {
-  ctx.response.body = { message: `Hello world!` };
-  return next()
-})
+    ctx.response.body = {message: `Hello world!`};
+    return next()
+});
 
 router.post('crafting-calculator', (ctx: Koa.Context, next: Function) => {
-  const body = ctx.request.body as FulfillmentRequest;
-  ctx.response.body = {
-    fulfillmentText: "Hi Muffin!",
-  };
-  console.log(JSON.stringify(body));
+    const body = ctx.request.body as FulfillmentRequest;
+    ctx.response.body = {
+        fulfillmentText: 'Hi Muffin!',
+    };
+    console.log(JSON.stringify(ctx.request.body));
 });
 
 const app = new Koa();

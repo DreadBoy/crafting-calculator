@@ -10,9 +10,9 @@ router.get('/', (ctx, next) => {
 router.post('crafting-calculator', (ctx, next) => {
     const body = ctx.request.body;
     ctx.response.body = {
-        fulfillmentText: "Hi Muffin!",
+        fulfillmentText: 'Hi Muffin!',
     };
-    console.log(JSON.stringify(body));
+    console.log(JSON.stringify(ctx.request.body));
 });
 const app = new Koa();
 app.use(bodyParser());
