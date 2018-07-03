@@ -9,7 +9,9 @@ router.get('/', (ctx: Koa.Context, next: Function) => {
 
 router.post('crafting-calculator', (ctx: Koa.Context, next: Function) => {
   const body = ctx.request.body as FulfillmentRequest;
-  ctx.response.body = { success: true};
+  ctx.response.body = {
+    fulfillmentText: "Hi Muffin!",
+  };
   console.log(ctx);
 });
 
