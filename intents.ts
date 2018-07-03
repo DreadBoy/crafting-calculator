@@ -1,0 +1,30 @@
+import {getCost} from './recipes';
+import {FulfillmentResponse} from './types';
+
+const speakArray = (pairs: { item: string, amount: number }[], lastJoin: string = 'and'): string => {
+    const toString = (pair: { item: string, amount: number }) => `${pair.amount} ${pair.item}`;
+    return `${
+        pairs.slice(0, pairs.length - 1).map(toString).join(', ')} ${lastJoin} ${
+        pairs.slice(pairs.length - 1).map(toString)}`
+};
+
+const handlers = [
+    {
+        id: 'projects/crafting-calculator-c4a27/agent/intents/62f95706-2648-449e-b0b8-8bfe3ba14bc5',
+        handler: (Item: string, Amount: number): FulfillmentResponse => {
+            const cost = getCost(Item);
+            const ret = Object.keys(cost).map(key => ({item: key, amount: cost[key] * Amount}));
+            if (ret.reduce((acc, curr) => acc + curr.amount, 0) === 0)
+                return {
+                    fulfillmentText: 'I don\'t know how to make that item',
+                };
+            return {
+                fulfillmentText: `You need ${speakArray(ret)}`,
+            };
+        }
+    }
+];
+
+export function getIntent(id: string) {
+    return handlers.filter(h => h.id === id)[0].handler;
+}

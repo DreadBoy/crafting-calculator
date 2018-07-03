@@ -31,7 +31,12 @@ function findRecipe(result) {
     return recipes.filter(f => Object.keys(f.output).indexOf(result) >= 0)[0];
 }
 function getCost(item) {
-    return findRecipe(item).output;
+    const recipe = findRecipe(item);
+    if (!recipe)
+        return {
+            'unknown': 0
+        };
+    return findRecipe(item).input;
 }
 exports.getCost = getCost;
 //# sourceMappingURL=recipes.js.map

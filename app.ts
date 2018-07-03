@@ -1,7 +1,8 @@
 import * as Koa from 'koa';
 import {FulfillmentRequest} from './types';
+import {getIntent} from './intents';
 
-const router = require('koa-better-router')().loadMethods()
+const router = require('koa-better-router')().loadMethods();
 const bodyParser = require('koa-bodyparser');
 
 router.get('/', (ctx: Koa.Context, next: Function) => {
@@ -11,10 +12,8 @@ router.get('/', (ctx: Koa.Context, next: Function) => {
 
 router.post('crafting-calculator', (ctx: Koa.Context, next: Function) => {
     const body = ctx.request.body as FulfillmentRequest;
-    ctx.response.body = {
-        fulfillmentText: 'Hi Muffin!',
-    };
-    console.log(JSON.stringify(ctx.request.body));
+    ctx.response.body = getIntent(body.queryResult.intent.name)(body.queryResult.parameters.Item, body.queryResult.parameters.Amount);
+    return next();
 });
 
 const app = new Koa();

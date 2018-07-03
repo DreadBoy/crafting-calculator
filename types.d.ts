@@ -1,19 +1,26 @@
-interface FulfillmentRequest {
+export interface FulfillmentRequest {
     responseId: String
     session: String
     queryResult: {
         queryText: String
-        parameters: { [key: string]: string[] }
+        parameters: { [key: string]: any }
         allRequiredParamsPresent: Boolean
         fulfillmentText: String
         fulfillmentMessages: {}
         outputContexts?: {}
-        intent: {}
+        intent: {
+            name: string,
+            displayName: string,
+        }
         intentDetectionConfidence: number
         diagnosticInfo: {}
         languageCode: String
     },
     originalDetectIntentRequest: {},
+}
+
+export interface FulfillmentResponse {
+    fulfillmentText: string
 }
 export interface Recipe {
     input: {[item: string]: number},

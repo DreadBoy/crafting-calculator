@@ -33,5 +33,10 @@ function findRecipe(result: string) {
 }
 
 export function getCost(item: string) {
-    return findRecipe(item).output;
+    const recipe = findRecipe(item);
+    if (!recipe)
+        return {
+            'unknown': 0
+        };
+    return findRecipe(item).input;
 }
