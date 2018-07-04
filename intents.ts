@@ -1,8 +1,15 @@
-import {findRecipe} from './recipes';
-import {FulfillmentResponse, ItemStack} from './types';
+import {
+    findRecipe, getItemAmount, getItemDisplayName,
+    getItemId,
+    ItemStack, ShapeReduce
+} from './recipes';
+import {FulfillmentResponse} from './types';
+import {ShapedRecipe} from './minecraft-data';
+const pluralize = require('pluralize');
 
 const toString = (itemStack: ItemStack) => {
-    return `${itemStack.amount} ${itemStack.amount === 1 ? itemStack.item : `${itemStack.item}s`}`
+    const singular = pluralize.singular(itemStack.displayName);
+    return `${itemStack.amount} ${itemStack.amount === 1 ? singular : pluralize.plural(singular)}`
 };
 
 const speakArray = (items: ItemStack[], lastJoin: string = 'and'): string => {
@@ -16,15 +23,35 @@ const handlers = [
     {
         id: 'projects/crafting-calculator-c4a27/agent/intents/62f95706-2648-449e-b0b8-8bfe3ba14bc5',
         handler: (Item: string, Amount: number): FulfillmentResponse => {
-            const recipe = findRecipe(Item);
+            const recipe = findRecipe(Item) as ShapedRecipe;
             if (!recipe)
                 return {
-                    fulfillmentText: 'I don\'t know how to make that item',
+                    fulfillmentText: 'I don\'t know how to craft that item',
                 };
-            const outputPerOneCraft = recipe.output.filter(is => is.item === Item)[0].amount;
+            let outputPerOneCraft = getItemAmount(recipe.result);
             const craftTimes = Math.ceil(Amount / outputPerOneCraft);
-            const inputs = recipe.input.map((is): ItemStack => ({item: is.item, amount: is.amount * craftTimes}));
-            const outputs = recipe.output.map((is): ItemStack => ({item: is.item, amount: is.amount * craftTimes}));
+            let outputs: ItemStack[] = [{
+                id: getItemId(recipe.result),
+                displayName: getItemDisplayName(getItemId(recipe.result)),
+                amount: getItemAmount(recipe.result),
+            }];
+            const reduced = {} as ShapeReduce;
+            for (let row of recipe.inShape)
+                for (let item of row) {
+                    const id = getItemId(item);
+                    if (id < 0)
+                        continue;
+                    if (!reduced[id])
+                        reduced[id] = 0;
+                    reduced[id]++;
+                }
+            const inputs = Object.keys(reduced).map(id => (
+                {
+                    id: parseInt(id),
+                    displayName: getItemDisplayName(parseInt(id)),
+                    amount: reduced[parseInt(id)],
+                } as ItemStack
+            ));
             return {
                 fulfillmentText: `You need ${speakArray(inputs)} and you'll get ${speakArray(outputs)}.`,
             };

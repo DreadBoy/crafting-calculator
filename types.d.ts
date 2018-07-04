@@ -22,12 +22,3 @@ export interface FulfillmentRequest {
 export interface FulfillmentResponse {
     fulfillmentText: string
 }
-export interface Recipe {
-    output: ItemStack[],
-    input: ItemStack[],
-}
-
-export interface ItemStack {
-    item: string;
-    amount: number;
-}

@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const recipes_1 = require("./recipes");
+const pluralize = require('pluralize');
 const toString = (itemStack) => {
-    return `${itemStack.amount} ${itemStack.amount === 1 ? itemStack.item : `${itemStack.item}s`}`;
+    const singular = pluralize.singular(itemStack.displayName);
+    return `${itemStack.amount} ${itemStack.amount === 1 ? singular : pluralize.plural(singular)}`;
 };
 const speakArray = (items, lastJoin = 'and') => {
     if (items.length === 1)
@@ -16,12 +18,30 @@ const handlers = [
             const recipe = recipes_1.findRecipe(Item);
             if (!recipe)
                 return {
-                    fulfillmentText: 'I don\'t know how to make that item',
+                    fulfillmentText: 'I don\'t know how to craft that item',
                 };
-            const outputPerOneCraft = recipe.output.filter(is => is.item === Item)[0].amount;
+            let outputPerOneCraft = recipes_1.getItemAmount(recipe.result);
             const craftTimes = Math.ceil(Amount / outputPerOneCraft);
-            const inputs = recipe.input.map((is) => ({ item: is.item, amount: is.amount * craftTimes }));
-            const outputs = recipe.output.map((is) => ({ item: is.item, amount: is.amount * craftTimes }));
+            let outputs = [{
+                    id: recipes_1.getItemId(recipe.result),
+                    displayName: recipes_1.getItemDisplayName(recipes_1.getItemId(recipe.result)),
+                    amount: recipes_1.getItemAmount(recipe.result),
+                }];
+            const reduced = {};
+            for (let row of recipe.inShape)
+                for (let item of row) {
+                    const id = recipes_1.getItemId(item);
+                    if (id < 0)
+                        continue;
+                    if (!reduced[id])
+                        reduced[id] = 0;
+                    reduced[id]++;
+                }
+            const inputs = Object.keys(reduced).map(id => ({
+                id: parseInt(id),
+                displayName: recipes_1.getItemDisplayName(parseInt(id)),
+                amount: reduced[parseInt(id)],
+            }));
             return {
                 fulfillmentText: `You need ${speakArray(inputs)} and you'll get ${speakArray(outputs)}.`,
             };
