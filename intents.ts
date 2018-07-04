@@ -33,7 +33,7 @@ const handlers = [
             let outputs: ItemStack[] = [{
                 id: getItemId(recipe.result),
                 displayName: getItemDisplayName(getItemId(recipe.result)),
-                amount: getItemAmount(recipe.result),
+                amount: getItemAmount(recipe.result) * craftTimes,
             }];
             const reduced = {} as ShapeReduce;
             for (let row of recipe.inShape)
@@ -49,7 +49,7 @@ const handlers = [
                 {
                     id: parseInt(id),
                     displayName: getItemDisplayName(parseInt(id)),
-                    amount: reduced[parseInt(id)],
+                    amount: reduced[parseInt(id)] * craftTimes,
                 } as ItemStack
             ));
             return {
