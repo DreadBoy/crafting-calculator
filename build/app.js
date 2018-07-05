@@ -21,7 +21,7 @@ router.get('/all-items', (ctx, next) => {
             return `"${singular}","${singular}","${pluralize.plural(singular)}"`;
         }).join('\n');
     else
-        ctx.response.body = recipes_1.getAllItemsAndBlocks();
+        ctx.response.body = all;
     return next();
 });
 router.get('/supported-items/:query', (ctx, next) => {
@@ -30,7 +30,15 @@ router.get('/supported-items/:query', (ctx, next) => {
     return next();
 });
 router.get('/supported-items', (ctx, next) => {
-    ctx.response.body = recipes_1.getSupportedItemsAndBlocks();
+    const supported = recipes_1.getSupportedItemsAndBlocks();
+    if (ctx.request.header['accept'] === 'text/csv')
+        ctx.response.body = supported.map(is => {
+            const displayName = is.displayName.replace(/ ?\(.*?\) ?/, '');
+            const singular = pluralize.singular(displayName);
+            return `"${singular}","${singular}","${pluralize.plural(singular)}"`;
+        }).join('\n');
+    else
+        ctx.response.body = supported;
     return next();
 });
 app

@@ -23,7 +23,7 @@ router.get('/all-items', (ctx: Koa.Context, next: Function) => {
             return `"${singular}","${singular}","${pluralize.plural(singular)}"`
         }).join('\n');
     else
-        ctx.response.body = getAllItemsAndBlocks();
+        ctx.response.body = all;
     return next();
 });
 
@@ -34,7 +34,15 @@ router.get('/supported-items/:query', (ctx: Koa.Context, next: Function) => {
 });
 
 router.get('/supported-items', (ctx: Koa.Context, next: Function) => {
-    ctx.response.body = getSupportedItemsAndBlocks();
+    const supported = getSupportedItemsAndBlocks();
+    if (ctx.request.header['accept'] === 'text/csv')
+        ctx.response.body = supported.map(is => {
+            const displayName = is.displayName.replace(/ ?\(.*?\) ?/, '');
+            const singular = pluralize.singular(displayName);
+            return `"${singular}","${singular}","${pluralize.plural(singular)}"`
+        }).join('\n');
+    else
+        ctx.response.body = supported;
     return next();
 });
 

@@ -1,9 +1,13 @@
+export interface Parameters {
+    [key: string]: any
+}
+
 export interface FulfillmentRequest {
     responseId: String
     session: String
     queryResult: {
         queryText: String
-        parameters: { [key: string]: any }
+        parameters: Parameters
         allRequiredParamsPresent: Boolean
         fulfillmentText: String
         fulfillmentMessages: {}

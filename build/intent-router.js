@@ -6,7 +6,7 @@ const router = new Router();
 exports.router = router;
 router.post('/crafting-calculator', (ctx, next) => {
     const body = ctx.request.body;
-    ctx.response.body = intents_1.getIntent(body.queryResult.intent.name)(body.queryResult.parameters.Item, body.queryResult.parameters.Amount);
+    ctx.response.body = intents_1.getIntent(body.queryResult.intent.name)(body.queryResult.parameters);
     return next();
 });
 //# sourceMappingURL=intent-router.js.map

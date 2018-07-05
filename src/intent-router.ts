@@ -7,7 +7,7 @@ const router = new Router();
 
 router.post('/crafting-calculator', (ctx: Koa.Context, next: Function) => {
     const body = ctx.request.body as FulfillmentRequest;
-    ctx.response.body = getIntent(body.queryResult.intent.name)(body.queryResult.parameters.Item, body.queryResult.parameters.Amount);
+    ctx.response.body = getIntent(body.queryResult.intent.name)(body.queryResult.parameters);
     return next();
 });
 
