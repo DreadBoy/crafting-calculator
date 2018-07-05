@@ -67,6 +67,10 @@ const handlers = [
         id: 'projects/crafting-calculator-c4a27/agent/intents/266a2728-0035-4e7b-9b61-ed4fbe09f801',
         handler: (parameters) => {
             const Item = parameters['Item'];
+            if (Item.length === 0)
+                return {
+                    fulfillmentText: `I don't recognise ${Item}, sorry. 😕`
+                };
             const found = recipes_1.findSupportedItemOrBlock(Item);
             if (found.length > 0)
                 return {
