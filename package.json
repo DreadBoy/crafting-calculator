@@ -5,25 +5,26 @@
     "node": "9.9.0"
   },
   "description": "",
-  "main": "index.js",
+  "main": "build/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
+    "start": "node build/app.js",
     "compile": "tsc --watch"
   },
   "author": "Matic Leva",
   "license": "ISC",
   "dependencies": {
     "koa": "^2.5.1",
-    "koa-better-router": "^2.1.1",
     "koa-bodyparser": "^4.2.1",
     "koa-json": "^2.0.2",
+    "koa-router": "^7.4.0",
     "minecraft-data": "^2.26.0",
     "pluralize": "^7.0.0"
   },
   "devDependencies": {
     "@types/koa": "^2.0.46",
     "@types/koa-bodyparser": "^5.0.0",
+    "@types/koa-router": "^7.0.30",
     "typescript": "^2.9.2"
   }
 }

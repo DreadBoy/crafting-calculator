@@ -53,4 +53,23 @@ function findRecipe(Item) {
     return recipe[0];
 }
 exports.findRecipe = findRecipe;
+function getAllItemsAndBlocks() {
+    const blocks = Object.values(data.blocks).map(b => ({
+        amount: 1,
+        displayName: b.displayName,
+        id: b.id,
+    }));
+    const items = Object.values(data.items).map(i => ({
+        amount: 1,
+        displayName: i.displayName,
+        id: i.id,
+    }));
+    return blocks.concat(...items);
+}
+exports.getAllItemsAndBlocks = getAllItemsAndBlocks;
+function getSupportedItemsAndBlocks() {
+    const all = getAllItemsAndBlocks();
+    return Object.keys(data.recipes).map(id => all.filter(is => is.id == parseInt(id))[0]);
+}
+exports.getSupportedItemsAndBlocks = getSupportedItemsAndBlocks;
 //# sourceMappingURL=recipes.js.map

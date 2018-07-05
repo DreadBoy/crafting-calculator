@@ -25,7 +25,7 @@ const handlers = [
             let outputs = [{
                     id: recipes_1.getItemId(recipe.result),
                     displayName: recipes_1.getItemDisplayName(recipes_1.getItemId(recipe.result)),
-                    amount: recipes_1.getItemAmount(recipe.result),
+                    amount: recipes_1.getItemAmount(recipe.result) * craftTimes,
                 }];
             const reduced = {};
             for (let row of recipe.inShape)
@@ -40,7 +40,7 @@ const handlers = [
             const inputs = Object.keys(reduced).map(id => ({
                 id: parseInt(id),
                 displayName: recipes_1.getItemDisplayName(parseInt(id)),
-                amount: reduced[parseInt(id)],
+                amount: reduced[parseInt(id)] * craftTimes,
             }));
             return {
                 fulfillmentText: `You need ${speakArray(inputs)} and you'll get ${speakArray(outputs)}.`,

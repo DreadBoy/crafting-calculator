@@ -3,7 +3,7 @@ import {
     CraftingItemId,
     CraftingItemMetadata,
     data,
-    Item,
+    Item, Items,
     RecipeItem,
     ShapedOrShapelessRecipe,
 } from './minecraft-data';
@@ -68,4 +68,23 @@ export function findRecipe(Item: string): ShapedOrShapelessRecipe | null {
     if (!recipe)
         return null;
     return recipe[0];
+}
+
+export function getAllItemsAndBlocks(): ItemStack[] {
+    const blocks = Object.values(data.blocks).map(b => ({
+        amount: 1,
+        displayName: b.displayName,
+        id: b.id,
+    } as ItemStack));
+    const items = Object.values(data.items).map(i => ({
+        amount: 1,
+        displayName: i.displayName,
+        id: i.id,
+    } as ItemStack));
+    return blocks.concat(...items);
+}
+
+export function getSupportedItemsAndBlocks() {
+    const all = getAllItemsAndBlocks();
+    return Object.keys(data.recipes).map(id => all.filter(is => is.id == parseInt(id))[0]);
 }
