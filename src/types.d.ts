@@ -26,3 +26,10 @@ export interface FulfillmentRequest {
 export interface FulfillmentResponse {
     fulfillmentText: string
 }
+export type ShapeReduce = { [id: number]: number };
+
+export type ItemStack = {
+    id: number
+    displayName: string
+    amount: number
+}

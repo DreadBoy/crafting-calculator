@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const pluralize = require('pluralize');
 const data = require('minecraft-data')('1.12.2');
 function isSimpleCraftingItem(item) {
     return typeof item === 'number';
@@ -41,10 +42,14 @@ function getItemDisplayName(id) {
     return block ? block.displayName : item ? item.displayName : 'unknown item';
 }
 exports.getItemDisplayName = getItemDisplayName;
+function normalize(Item) {
+    return pluralize.singular(Item.replace(/ ?\(.*?\) ?/, '')).toLowerCase();
+}
+exports.normalize = normalize;
 function findRecipe(Item) {
-    Item = Item.toLowerCase();
-    const block = Object.values(data.blocks).filter(b => b.displayName.toLowerCase() === Item)[0];
-    const item = Object.values(data.items).filter(i => i.displayName.toLowerCase() === Item)[0];
+    Item = normalize(Item);
+    const block = Object.values(data.blocks).filter(b => normalize(b.displayName) === Item)[0];
+    const item = Object.values(data.items).filter(i => normalize(i.displayName) === Item)[0];
     if (!block && !item)
         return null;
     const id = block ? block.id : item ? item.id : -1;
@@ -74,8 +79,8 @@ function getSupportedItemsAndBlocks() {
 }
 exports.getSupportedItemsAndBlocks = getSupportedItemsAndBlocks;
 function findSupportedItemOrBlock(query) {
-    query = query.toLowerCase();
-    return getSupportedItemsAndBlocks().filter(is => is.displayName.toLowerCase().includes(query));
+    query = normalize(query);
+    return getSupportedItemsAndBlocks().filter(is => normalize(is.displayName).includes(query));
 }
 exports.findSupportedItemOrBlock = findSupportedItemOrBlock;
 //# sourceMappingURL=recipes.js.map

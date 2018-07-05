@@ -3,10 +3,13 @@ import {
     CraftingItemId,
     CraftingItemMetadata,
     data,
-    Item, Items,
+    Item,
     RecipeItem,
     ShapedOrShapelessRecipe,
 } from './minecraft-data';
+import {ItemStack} from './types';
+const pluralize = require('pluralize');
+
 
 const data = require('minecraft-data')('1.12.2') as data;
 
@@ -50,18 +53,14 @@ export function getItemDisplayName(id: number): string {
     return block ? block.displayName : item ? item.displayName : 'unknown item';
 }
 
-export type ShapeReduce = { [id: number]: number };
-
-export type ItemStack = {
-    id: number
-    displayName: string
-    amount: number
+export function normalize(Item: string) {
+    return pluralize.singular(Item.replace(/ ?\(.*?\) ?/, '')).toLowerCase();
 }
 
 export function findRecipe(Item: string): ShapedOrShapelessRecipe | null {
-    Item = Item.toLowerCase();
-    const block: Block = Object.values(data.blocks).filter(b => b.displayName.toLowerCase() === Item)[0];
-    const item: Item = Object.values(data.items).filter(i => i.displayName.toLowerCase() === Item)[0];
+    Item = normalize(Item);
+    const block: Block = Object.values(data.blocks).filter(b => normalize(b.displayName) === Item)[0];
+    const item: Item = Object.values(data.items).filter(i => normalize(i.displayName) === Item)[0];
     if (!block && !item)
         return null;
     const id = block ? block.id : item ? item.id : -1;
@@ -91,6 +90,6 @@ export function getSupportedItemsAndBlocks() {
 }
 
 export function findSupportedItemOrBlock(query: string) {
-    query = query.toLowerCase();
-    return getSupportedItemsAndBlocks().filter(is => is.displayName.toLowerCase().includes(query));
+    query = normalize(query);
+    return getSupportedItemsAndBlocks().filter(is => normalize(is.displayName).includes(query));
 }

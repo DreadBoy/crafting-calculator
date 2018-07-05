@@ -1,9 +1,8 @@
 import {
     findRecipe, findSupportedItemOrBlock, getItemAmount, getItemDisplayName,
-    getItemId,
-    ItemStack, ShapeReduce
+    getItemId
 } from './recipes';
-import {FulfillmentResponse, Parameters} from './types';
+import {FulfillmentResponse, ItemStack, Parameters, ShapeReduce} from './types';
 import {ShapedRecipe} from './minecraft-data';
 const pluralize = require('pluralize');
 
