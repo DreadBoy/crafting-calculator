@@ -16,10 +16,16 @@ const handlers = [
         id: 'projects/crafting-calculator-c4a27/agent/intents/62f95706-2648-449e-b0b8-8bfe3ba14bc5',
         handler: (Item, Amount) => {
             const recipe = recipes_1.findRecipe(Item);
-            if (!recipe)
+            if (!recipe) {
+                const found = recipes_1.findSupportedItemOrBlock(Item);
+                if (found.length > 0)
+                    return {
+                        fulfillmentText: `I don't know how to craft that item but I know how to craft ${speakArray(found, 'or')},`
+                    };
                 return {
                     fulfillmentText: 'I don\'t know how to craft that item',
                 };
+            }
             let outputPerOneCraft = recipes_1.getItemAmount(recipe.result);
             const craftTimes = Math.ceil(Amount / outputPerOneCraft);
             let outputs = [{

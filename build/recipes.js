@@ -72,4 +72,9 @@ function getSupportedItemsAndBlocks() {
     return Object.keys(data.recipes).map(id => all.filter(is => is.id == parseInt(id))[0]);
 }
 exports.getSupportedItemsAndBlocks = getSupportedItemsAndBlocks;
+function findSupportedItemOrBlock(query) {
+    query = query.toLowerCase();
+    return getSupportedItemsAndBlocks().filter(is => is.displayName.toLowerCase().includes(query));
+}
+exports.findSupportedItemOrBlock = findSupportedItemOrBlock;
 //# sourceMappingURL=recipes.js.map

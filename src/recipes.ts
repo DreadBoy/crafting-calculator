@@ -88,3 +88,8 @@ export function getSupportedItemsAndBlocks() {
     const all = getAllItemsAndBlocks();
     return Object.keys(data.recipes).map(id => all.filter(is => is.id == parseInt(id))[0]);
 }
+
+export function findSupportedItemOrBlock(query: string) {
+    query = query.toLowerCase();
+    return getSupportedItemsAndBlocks().filter(is => is.displayName.toLowerCase().includes(query));
+}
