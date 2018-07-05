@@ -4,6 +4,8 @@ import * as Router from 'koa-router';
 import * as bodyParser from 'koa-bodyparser';
 import {router as intentRouter} from './intent-router';
 
+const pluralize = require('pluralize');
+
 const app = new Koa();
 const router = new Router();
 
@@ -13,7 +15,15 @@ router.get('/', (ctx: Koa.Context, next: Function) => {
 });
 
 router.get('/all-items', (ctx: Koa.Context, next: Function) => {
-    ctx.response.body = getAllItemsAndBlocks();
+    const all = getAllItemsAndBlocks();
+    if (ctx.request.header['accept'] === 'text/csv')
+        ctx.response.body = all.map(is => {
+            const displayName = is.displayName.replace(/ ?\(.*?\) ?/, '');
+            const singular = pluralize.singular(displayName);
+            return `"${singular}","${singular}","${pluralize.plural(singular)}"`
+        }).join('\n');
+    else
+        ctx.response.body = getAllItemsAndBlocks();
     return next();
 });
 

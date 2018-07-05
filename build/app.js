@@ -5,6 +5,7 @@ const recipes_1 = require("./recipes");
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
 const intent_router_1 = require("./intent-router");
+const pluralize = require('pluralize');
 const app = new Koa();
 const router = new Router();
 router.get('/', (ctx, next) => {
@@ -12,7 +13,15 @@ router.get('/', (ctx, next) => {
     return next();
 });
 router.get('/all-items', (ctx, next) => {
-    ctx.response.body = recipes_1.getAllItemsAndBlocks();
+    const all = recipes_1.getAllItemsAndBlocks();
+    if (ctx.request.header['accept'] === 'text/csv')
+        ctx.response.body = all.map(is => {
+            const displayName = is.displayName.replace(/ ?\(.*?\) ?/, '');
+            const singular = pluralize.singular(displayName);
+            return `"${singular}","${singular}","${pluralize.plural(singular)}"`;
+        }).join('\n');
+    else
+        ctx.response.body = recipes_1.getAllItemsAndBlocks();
     return next();
 });
 router.get('/supported-items/:query', (ctx, next) => {

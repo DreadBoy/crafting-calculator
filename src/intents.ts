@@ -1,6 +1,6 @@
 import {
     findRecipe, findSupportedItemOrBlock, getItemAmount, getItemDisplayName,
-    getItemId, getSupportedItemsAndBlocks,
+    getItemId,
     ItemStack, ShapeReduce
 } from './recipes';
 import {FulfillmentResponse} from './types';
