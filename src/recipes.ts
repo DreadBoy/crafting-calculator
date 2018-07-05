@@ -59,6 +59,7 @@ export type ItemStack = {
 }
 
 export function findRecipe(Item: string): ShapedOrShapelessRecipe | null {
+    Item = Item.toLowerCase();
     const block: Block = Object.values(data.blocks).filter(b => b.displayName.toLowerCase() === Item)[0];
     const item: Item = Object.values(data.items).filter(i => i.displayName.toLowerCase() === Item)[0];
     if (!block && !item)

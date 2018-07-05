@@ -42,6 +42,7 @@ function getItemDisplayName(id) {
 }
 exports.getItemDisplayName = getItemDisplayName;
 function findRecipe(Item) {
+    Item = Item.toLowerCase();
     const block = Object.values(data.blocks).filter(b => b.displayName.toLowerCase() === Item)[0];
     const item = Object.values(data.items).filter(i => i.displayName.toLowerCase() === Item)[0];
     if (!block && !item)

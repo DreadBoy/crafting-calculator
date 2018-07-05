@@ -20,7 +20,7 @@ const handlers = [
                 const found = recipes_1.findSupportedItemOrBlock(Item);
                 if (found.length > 0)
                     return {
-                        fulfillmentText: `I don't know how to craft that item but I know how to craft ${speakArray(found, 'or')},`
+                        fulfillmentText: `I don't know how to craft that item but I know how to craft ${speakArray(found, 'or')}.`
                     };
                 return {
                     fulfillmentText: 'I don\'t know how to craft that item',
