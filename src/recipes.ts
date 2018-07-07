@@ -5,7 +5,7 @@ import {
     data,
     Item,
     RecipeItem,
-    ShapedOrShapelessRecipe,
+    ShapedOrShapelessRecipe, ShapedRecipe, ShapelessRecipe,
 } from './minecraft-data';
 import {ItemStack} from './types';
 const pluralize = require('pluralize');
@@ -92,4 +92,12 @@ export function getSupportedItemsAndBlocks() {
 export function findSupportedItemOrBlock(query: string) {
     query = normalize(query);
     return getSupportedItemsAndBlocks().filter(is => normalize(is.displayName).includes(query));
+}
+
+export function isShaped(recipe: ShapedRecipe): boolean {
+    return !!recipe.inShape;
+}
+
+export function isShapeless(recipe: ShapelessRecipe): boolean {
+    return !!recipe.ingredients;
 }

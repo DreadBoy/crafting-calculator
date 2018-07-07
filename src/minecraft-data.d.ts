@@ -19,10 +19,13 @@ export type ShapedRecipe = {
     result: RecipeItem
     outShape?: Shape
 }
+export type ShapelessRecipe = {
+    ingredients: RecipeItem[]
+    result: RecipeItem
+    outShape?: Shape
+}
 
-export type ShapelessRecipe = {}
-
-export type ShapedOrShapelessRecipe = ShapedRecipe | ShapelessRecipe
+export type ShapedOrShapelessRecipe = ShapedRecipe & ShapelessRecipe
 
 export type Recipe = Array<ShapedOrShapelessRecipe>
 

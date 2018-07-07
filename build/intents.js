@@ -33,9 +33,13 @@ const handlers = [
                         fulfillmentText: `I don't know how to craft ${Item} but you can try searching for something similar by saying "Do you know ${Item}?".`
                     };
                 return {
-                    fulfillmentText: `I don't know how to craft ${Item}, sorry. 😕 Try searching for another item by saying "Do you know fence?".`,
+                    fulfillmentText: `I don't know how to craft ${Item}, sorry. Try searching for another item by saying "Do you know fence?".`,
                 };
             }
+            if (!recipes_1.isShaped(recipe) && !recipes_1.isShapeless(recipe))
+                return {
+                    fulfillmentText: `I don't know how to craft ${Item}, sorry. Try searching for another item by saying "Do you know fence?".`,
+                };
             let outputPerOneCraft = recipes_1.getItemAmount(recipe.result);
             const craftTimes = Math.ceil(Amount / outputPerOneCraft);
             let outputs = [{
@@ -44,15 +48,27 @@ const handlers = [
                     amount: recipes_1.getItemAmount(recipe.result) * craftTimes,
                 }];
             const reduced = {};
-            for (let row of recipe.inShape)
-                for (let item of row) {
-                    const id = recipes_1.getItemId(item);
+            if (recipes_1.isShaped(recipe)) {
+                for (let row of recipe.inShape)
+                    for (let item of row) {
+                        const id = recipes_1.getItemId(item);
+                        if (id < 0)
+                            continue;
+                        if (!reduced[id])
+                            reduced[id] = 0;
+                        reduced[id]++;
+                    }
+            }
+            else {
+                for (let ingredient of recipe.ingredients) {
+                    const id = recipes_1.getItemId(ingredient);
                     if (id < 0)
                         continue;
                     if (!reduced[id])
                         reduced[id] = 0;
                     reduced[id]++;
                 }
+            }
             const inputs = Object.keys(reduced).map(id => ({
                 id: parseInt(id),
                 displayName: recipes_1.getItemDisplayName(parseInt(id)),
@@ -69,7 +85,7 @@ const handlers = [
             const Item = parameters['Item'];
             if (Item.length === 0)
                 return {
-                    fulfillmentText: `I don't recognise ${Item}, sorry. 😕`
+                    fulfillmentText: `I don't recognise ${Item}, sorry.`
                 };
             const found = recipes_1.findSupportedItemOrBlock(Item);
             if (found.length > 0)
@@ -77,7 +93,7 @@ const handlers = [
                     fulfillmentText: `I know how to craft ${speakArray(found, toStringSimple)}.`
                 };
             return {
-                fulfillmentText: `I don't how to craft ${Item}, sorry. 😕`
+                fulfillmentText: `I don't how to craft ${Item}, sorry.`
             };
         }
     }

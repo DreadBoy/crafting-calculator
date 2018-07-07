@@ -1,9 +1,10 @@
 import {
     findRecipe, findSupportedItemOrBlock, getItemAmount, getItemDisplayName,
-    getItemId
+    getItemId, isShaped, isShapeless
 } from './recipes';
 import {FulfillmentResponse, ItemStack, Parameters, ShapeReduce} from './types';
-import {ShapedRecipe} from './minecraft-data';
+import {ShapedOrShapelessRecipe} from './minecraft-data';
+
 const pluralize = require('pluralize');
 
 const toStringWithAmount = (itemStack: ItemStack) => {
@@ -33,17 +34,21 @@ const handlers = [
                 return {
                     fulfillmentText: `I don't recognise that item. You can try searching for item by saying "Do you know fence?".`
                 };
-            const recipe = findRecipe(Item) as ShapedRecipe;
+            const recipe = findRecipe(Item) as ShapedOrShapelessRecipe;
             if (!recipe) {
                 const found = findSupportedItemOrBlock(Item);
-                if(found.length > 0)
+                if (found.length > 0)
                     return {
                         fulfillmentText: `I don't know how to craft ${Item} but you can try searching for something similar by saying "Do you know ${Item}?".`
                     };
                 return {
-                    fulfillmentText: `I don't know how to craft ${Item}, sorry. 😕 Try searching for another item by saying "Do you know fence?".`,
+                    fulfillmentText: `I don't know how to craft ${Item}, sorry. Try searching for another item by saying "Do you know fence?".`,
                 };
             }
+            if (!isShaped(recipe) && !isShapeless(recipe))
+                return {
+                    fulfillmentText: `I don't know how to craft ${Item}, sorry. Try searching for another item by saying "Do you know fence?".`,
+                };
             let outputPerOneCraft = getItemAmount(recipe.result);
             const craftTimes = Math.ceil(Amount / outputPerOneCraft);
             let outputs: ItemStack[] = [{
@@ -52,15 +57,27 @@ const handlers = [
                 amount: getItemAmount(recipe.result) * craftTimes,
             }];
             const reduced = {} as ShapeReduce;
-            for (let row of recipe.inShape)
-                for (let item of row) {
-                    const id = getItemId(item);
+            if (isShaped(recipe)) {
+                for (let row of recipe.inShape)
+                    for (let item of row) {
+                        const id = getItemId(item);
+                        if (id < 0)
+                            continue;
+                        if (!reduced[id])
+                            reduced[id] = 0;
+                        reduced[id]++;
+                    }
+            }
+            else {
+                for (let ingredient of recipe.ingredients) {
+                    const id = getItemId(ingredient);
                     if (id < 0)
                         continue;
                     if (!reduced[id])
                         reduced[id] = 0;
                     reduced[id]++;
                 }
+            }
             const inputs = Object.keys(reduced).map(id => (
                 {
                     id: parseInt(id),
@@ -79,7 +96,7 @@ const handlers = [
             const Item: string = parameters['Item'];
             if (Item.length === 0)
                 return {
-                    fulfillmentText: `I don't recognise ${Item}, sorry. 😕`
+                    fulfillmentText: `I don't recognise ${Item}, sorry.`
                 };
             const found = findSupportedItemOrBlock(Item);
             if (found.length > 0)
@@ -87,7 +104,7 @@ const handlers = [
                     fulfillmentText: `I know how to craft ${speakArray(found, toStringSimple)}.`
                 };
             return {
-                fulfillmentText: `I don't how to craft ${Item}, sorry. 😕`
+                fulfillmentText: `I don't how to craft ${Item}, sorry.`
             };
         }
     }

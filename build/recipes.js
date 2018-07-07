@@ -83,4 +83,12 @@ function findSupportedItemOrBlock(query) {
     return getSupportedItemsAndBlocks().filter(is => normalize(is.displayName).includes(query));
 }
 exports.findSupportedItemOrBlock = findSupportedItemOrBlock;
+function isShaped(recipe) {
+    return !!recipe.inShape;
+}
+exports.isShaped = isShaped;
+function isShapeless(recipe) {
+    return !!recipe.ingredients;
+}
+exports.isShapeless = isShapeless;
 //# sourceMappingURL=recipes.js.map
