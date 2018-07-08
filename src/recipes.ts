@@ -1,13 +1,18 @@
 import {
-    Block, CraftingItem,
+    Block,
+    CraftingItem,
     CraftingItemId,
     CraftingItemMetadata,
     data,
     Item,
     RecipeItem,
-    ShapedOrShapelessRecipe, ShapedRecipe, ShapelessRecipe,
+    ShapedOrShapelessRecipe,
+    ShapedRecipe,
+    ShapelessRecipe,
 } from './minecraft-data';
-import {ItemStack} from './types';
+import {FulfillmentResponse, ItemStack, ShapeReduce} from './types';
+import {FoundSimilarRecipe, NoRecipeFound} from "./responses";
+
 const pluralize = require('pluralize');
 
 
@@ -58,16 +63,33 @@ export function normalize(Item: string) {
 }
 
 export function findRecipe(Item: string): ShapedOrShapelessRecipe | null {
+    return findRecipes(Item)[0] || null;
+}
+
+export function findRecipes(Item: string): ShapedOrShapelessRecipe[] {
     Item = normalize(Item);
     const block: Block = Object.values(data.blocks).filter(b => normalize(b.displayName) === Item)[0];
     const item: Item = Object.values(data.items).filter(i => normalize(i.displayName) === Item)[0];
     if (!block && !item)
-        return null;
+        return [];
     const id = block ? block.id : item ? item.id : -1;
     const recipe = Object.keys(data.recipes).filter(i => parseInt(i) === id).map(id => data.recipes[parseInt(id)])[0];
     if (!recipe)
-        return null;
-    return recipe[0];
+        return [];
+    return recipe;
+}
+
+export function findRecipeRecursive(Item: string, From: string): ShapedOrShapelessRecipe | null {
+    Item = normalize(Item);
+    From = normalize(From);
+    return findRecipe(Item);
+    // const toCheck: ShapedOrShapelessRecipe[] = [];
+    // const checked: ShapedOrShapelessRecipe[] = [];
+    // toCheck.push(...findRecipes(Item));
+    // while(toCheck.length > 0){
+    //     const checking = toCheck.shift();
+    //     summarizeInputs(checking, 1);
+    // }
 }
 
 export function getAllItemsAndBlocks(): ItemStack[] {
@@ -100,4 +122,48 @@ export function isShaped(recipe: ShapedRecipe): boolean {
 
 export function isShapeless(recipe: ShapelessRecipe): boolean {
     return !!recipe.ingredients;
+}
+
+export function checkRecipe(Item: string, recipe: ShapedOrShapelessRecipe): FulfillmentResponse | null {
+    if (!recipe) {
+        const found = findSupportedItemOrBlock(Item);
+        if (found.length > 0)
+            return FoundSimilarRecipe(Item);
+        return NoRecipeFound(Item);
+    }
+    if (!isShaped(recipe) && !isShapeless(recipe))
+        return NoRecipeFound(Item);
+    return null;
+}
+
+export function summarizeInputs(recipe: ShapedOrShapelessRecipe, craftTimes: number): ItemStack[] {
+    const reduced = {} as ShapeReduce;
+    if (isShaped(recipe)) {
+        for (let row of recipe.inShape)
+            for (let item of row) {
+                const id = getItemId(item);
+                if (id < 0)
+                    continue;
+                if (!reduced[id])
+                    reduced[id] = 0;
+                reduced[id]++;
+            }
+    }
+    else {
+        for (let ingredient of recipe.ingredients) {
+            const id = getItemId(ingredient);
+            if (id < 0)
+                continue;
+            if (!reduced[id])
+                reduced[id] = 0;
+            reduced[id]++;
+        }
+    }
+    return Object.keys(reduced).map(id => (
+        {
+            id: parseInt(id),
+            displayName: getItemDisplayName(parseInt(id)),
+            amount: reduced[parseInt(id)] * craftTimes,
+        } as ItemStack
+    ));
 }

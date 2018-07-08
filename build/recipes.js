@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const responses_1 = require("./responses");
 const pluralize = require('pluralize');
 const data = require('minecraft-data')('1.12.2');
 function isSimpleCraftingItem(item) {
@@ -47,18 +48,35 @@ function normalize(Item) {
 }
 exports.normalize = normalize;
 function findRecipe(Item) {
+    return findRecipes(Item)[0] || null;
+}
+exports.findRecipe = findRecipe;
+function findRecipes(Item) {
     Item = normalize(Item);
     const block = Object.values(data.blocks).filter(b => normalize(b.displayName) === Item)[0];
     const item = Object.values(data.items).filter(i => normalize(i.displayName) === Item)[0];
     if (!block && !item)
-        return null;
+        return [];
     const id = block ? block.id : item ? item.id : -1;
     const recipe = Object.keys(data.recipes).filter(i => parseInt(i) === id).map(id => data.recipes[parseInt(id)])[0];
     if (!recipe)
-        return null;
-    return recipe[0];
+        return [];
+    return recipe;
 }
-exports.findRecipe = findRecipe;
+exports.findRecipes = findRecipes;
+function findRecipeRecursive(Item, From) {
+    Item = normalize(Item);
+    From = normalize(From);
+    return findRecipe(Item);
+    // const toCheck: ShapedOrShapelessRecipe[] = [];
+    // const checked: ShapedOrShapelessRecipe[] = [];
+    // toCheck.push(...findRecipes(Item));
+    // while(toCheck.length > 0){
+    //     const checking = toCheck.shift();
+    //     summarizeInputs(checking, 1);
+    // }
+}
+exports.findRecipeRecursive = findRecipeRecursive;
 function getAllItemsAndBlocks() {
     const blocks = Object.values(data.blocks).map(b => ({
         amount: 1,
@@ -91,4 +109,46 @@ function isShapeless(recipe) {
     return !!recipe.ingredients;
 }
 exports.isShapeless = isShapeless;
+function checkRecipe(Item, recipe) {
+    if (!recipe) {
+        const found = findSupportedItemOrBlock(Item);
+        if (found.length > 0)
+            return responses_1.FoundSimilarRecipe(Item);
+        return responses_1.NoRecipeFound(Item);
+    }
+    if (!isShaped(recipe) && !isShapeless(recipe))
+        return responses_1.NoRecipeFound(Item);
+    return null;
+}
+exports.checkRecipe = checkRecipe;
+function summarizeInputs(recipe, craftTimes) {
+    const reduced = {};
+    if (isShaped(recipe)) {
+        for (let row of recipe.inShape)
+            for (let item of row) {
+                const id = getItemId(item);
+                if (id < 0)
+                    continue;
+                if (!reduced[id])
+                    reduced[id] = 0;
+                reduced[id]++;
+            }
+    }
+    else {
+        for (let ingredient of recipe.ingredients) {
+            const id = getItemId(ingredient);
+            if (id < 0)
+                continue;
+            if (!reduced[id])
+                reduced[id] = 0;
+            reduced[id]++;
+        }
+    }
+    return Object.keys(reduced).map(id => ({
+        id: parseInt(id),
+        displayName: getItemDisplayName(parseInt(id)),
+        amount: reduced[parseInt(id)] * craftTimes,
+    }));
+}
+exports.summarizeInputs = summarizeInputs;
 //# sourceMappingURL=recipes.js.map
